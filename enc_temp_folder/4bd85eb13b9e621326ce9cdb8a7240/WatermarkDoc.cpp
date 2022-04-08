@@ -149,23 +149,23 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark()
 	unsigned char mask = 0x01;
 	int position = 0;
 
-	*(m_BitPlane_ptr) = SplitBitPlane(mask, position);
+	/*m_BitPlane_ptr[0] = SplitBitPlane(mask, position);
 
 	mask <<= 1;
 	position += 1;
-	*(m_BitPlane_ptr + 1) = SplitBitPlane(mask, position);
+	m_BitPlane_ptr[1] = SplitBitPlane(mask, position);
 
 	mask <<= 1;
 	position += 1;
-	*(m_BitPlane_ptr + 2) = SplitBitPlane(mask, position);
+	m_BitPlane_ptr[2] = SplitBitPlane(mask, position);*/
 	
 
-	/*for (int i = 1; i < 8; i++)
+	for (int i = 1; i < 8; i++)
 	{
 		mask <<= 1;
 		position += 1;
-		*(m_BitPlane_ptr + i) = SplitBitPlane(mask, position);
-	}*/
+		m_BitPlane_ptr[i] = SplitBitPlane(mask, position);
+	}
 }
 
 

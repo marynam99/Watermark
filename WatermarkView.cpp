@@ -65,67 +65,47 @@ void CWatermarkView::OnDraw(CDC* pDC)
 	// 입력 이미지를 화면에 출력
 	int i, j;
 	unsigned char R, G, B;
-	for (int i = 0; i < pDoc->m_height; i++) {
-		for (int j = 0; j < pDoc->m_width; j++) {
+	unsigned char* m_temp_bitplane;
+
+	// 원본 이미지 출력
+	for (int i = 0; i < pDoc->m_height; i++)
+	{
+		for (int j = 0; j < pDoc->m_width; j++)
+		{
 			R = G = B = pDoc->m_InputImage[i * (pDoc->m_width) + j]; //Input: Grayscale. 따라서 rgb를 똑같이 함
 			pDC->SetPixel(j + 5, i + 5, RGB(R, G, B)); // 첫 두 매개변수: 좌표
 		}
 	}
 
+	/*for (int i = 0; i < pDoc->m_Re_height; i++)
+	{
+		for (int j = 0; j < pDoc->m_Re_width; j++)
+		{
+			printf("int: %d", (i * (pDoc->m_Re_width) + j));
+			R = G = B = pDoc->m_BitPlane_ptr[0][i * (pDoc->m_Re_width) + j];
+			pDC->SetPixel(j + pDoc->m_width + 10, i + 5, RGB(R, G, B));
+		}
+	}*/
+
+
 	// 비트플레인 이미지를 화면에 출력
 	if (is_bitplaneall)
 	{
-		/*for (int bp_num = 0; bp_num < 8; bp_num++)
+
+		for (int bp_num = 0; bp_num < 3; bp_num++)
 		{
-			for (int i = 0; i < pDoc->m_height; i++)
+			for (int i = 0; i < pDoc->m_Re_height; i++)
 			{
-				for (int j = 0; j < pDoc->m_width; j++)
+				for (int j = 0; j < pDoc->m_Re_width; j++)
 				{
-					R = pDoc->m_BitPlanes[bp_num][i * (pDoc->m_width) + j];
-					R = G = B;
-					pDC->SetPixel(j + pDoc->m_width + 10, i + 5, RGB(R, G, B));
+					printf("int: %d", (i * (pDoc->m_Re_width) + j));
+					R = G = B = pDoc->m_BitPlane_ptr[bp_num][i * (pDoc->m_Re_width) + j];
+					pDC->SetPixel(j + pDoc->m_width * (bp_num + 1) + 10, i + 5, RGB(R, G, B));
 				}
-			}
-		}*/
-		for (int i = 0; i < pDoc->m_Re_height; i++)
-		{
-			for (int j = 0; j < pDoc->m_Re_width; j++)
-			{
-				R = pDoc->m_BitPlane4[i * (pDoc->m_Re_width) + j];
-				R = G = B;
-				pDC->SetPixel(j + pDoc->m_width + 10, i + 5, RGB(R, G, B));
-			}
-		}
-
-		for (int i = 0; i < pDoc->m_Re_height; i++)
-		{
-			for (int j = 0; j < pDoc->m_Re_width; j++)
-			{
-				R = G = B = pDoc->m_BitPlane3[i * (pDoc->m_Re_width) + j];
-				pDC->SetPixel(j + pDoc->m_width * 2 + 10, i + 5, RGB(R, G, B));
-			}
-		}
-
-		for (int i = 0; i < pDoc->m_Re_height; i++)
-		{
-			for (int j = 0; j < pDoc->m_Re_width; j++)
-			{
-				R = G = B = pDoc->m_BitPlane2[i * pDoc->m_Re_width + j];
-				pDC->SetPixel(j + pDoc->m_width * 3 + 10, i + 5, RGB(R, G, B));
-			}
-		}
-
-		for (int i = 0; i < pDoc->m_Re_height; i++)
-		{
-			for (int j = 0; j < pDoc->m_Re_width; j++)
-			{
-				R = G = B = pDoc->m_BitPlane1[i * pDoc->m_Re_width + j];
-				pDC->SetPixel(j + pDoc->m_width * 4 + 10, i + 5, RGB(R, G, B));
 			}
 		}
 	}
 }
-
 
 // CWatermarkView 인쇄
 
