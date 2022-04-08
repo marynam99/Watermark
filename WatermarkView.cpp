@@ -92,7 +92,7 @@ void CWatermarkView::OnDraw(CDC* pDC)
 	if (is_bitplaneall)
 	{
 
-		for (int bp_num = 0; bp_num < 3; bp_num++)
+		for (int bp_num = 0; bp_num < 8; bp_num++)
 		{
 			for (int i = 0; i < pDoc->m_Re_height; i++)
 			{
@@ -100,7 +100,10 @@ void CWatermarkView::OnDraw(CDC* pDC)
 				{
 					printf("int: %d", (i * (pDoc->m_Re_width) + j));
 					R = G = B = pDoc->m_BitPlane_ptr[bp_num][i * (pDoc->m_Re_width) + j];
-					pDC->SetPixel(j + pDoc->m_width * (bp_num + 1) + 10, i + 5, RGB(R, G, B));
+					pDC->SetPixel(
+						j + pDoc->m_width * (bp_num % 4 + 1) + 10,
+						i + pDoc->m_Re_height * (bp_num /4) + 5, 
+						RGB(R, G, B));
 				}
 			}
 		}

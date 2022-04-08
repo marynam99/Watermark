@@ -26,7 +26,7 @@ public:
 	unsigned char* m_OutputImage;
 
 	// 비트 플레인 이미지들
-	unsigned char* m_BitPlane_ptr[8];
+	unsigned char** m_BitPlane_ptr;
 	unsigned char* m_BitPlane0;
 	unsigned char* m_BitPlane1;
 	unsigned char* m_BitPlane2;
