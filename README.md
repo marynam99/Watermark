@@ -1,5 +1,3 @@
-# Watermark
-
-## Image Processing and Applications - Assignment1
+# Watermark - Image Processing and Applications 
 
 Add watermark image on BitMapPlane
