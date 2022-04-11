@@ -12,6 +12,9 @@
 
 #include "WatermarkDoc.h"
 #include "WatermarkView.h"
+#include "CDlgNumber.h"
+#include <iostream>
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,6 +70,8 @@ void CWatermarkView::OnDraw(CDC* pDC)
 	unsigned char R, G, B;
 	unsigned char* m_temp_bitplane;
 
+	
+
 	// 원본 이미지 출력
 	for (int i = 0; i < pDoc->m_height; i++)
 	{
@@ -77,32 +82,21 @@ void CWatermarkView::OnDraw(CDC* pDC)
 		}
 	}
 
-	/*for (int i = 0; i < pDoc->m_Re_height; i++)
-	{
-		for (int j = 0; j < pDoc->m_Re_width; j++)
-		{
-			printf("int: %d", (i * (pDoc->m_Re_width) + j));
-			R = G = B = pDoc->m_BitPlane_ptr[0][i * (pDoc->m_Re_width) + j];
-			pDC->SetPixel(j + pDoc->m_width + 10, i + 5, RGB(R, G, B));
-		}
-	}*/
-
-
+	// 몇번째 비트플레인에 Watermark 삽입할 지 입력
+	CDlgNumber dlg;
 	// 비트플레인 이미지를 화면에 출력
 	if (is_bitplaneall)
 	{
-
 		for (int bp_num = 0; bp_num < 8; bp_num++)
 		{
 			for (int i = 0; i < pDoc->m_Re_height; i++)
 			{
 				for (int j = 0; j < pDoc->m_Re_width; j++)
 				{
-					printf("int: %d", (i * (pDoc->m_Re_width) + j));
 					R = G = B = pDoc->m_BitPlane_ptr[bp_num][i * (pDoc->m_Re_width) + j];
 					pDC->SetPixel(
 						j + pDoc->m_width * (bp_num % 4 + 1) + 10,
-						i + pDoc->m_Re_height * (bp_num /4) + 5, 
+						i + pDoc->m_Re_height * (bp_num / 4) + 5,
 						RGB(R, G, B));
 				}
 			}
@@ -180,6 +174,12 @@ void CWatermarkView::OnWatermarkBitplanewatermark()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CWatermarkDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	pDoc->OnWatermarkBitplanewatermark();
-	Invalidate(TRUE);
+
+	// 몇번째 비트맵에 wm 넣을 지 입력
+	CDlgNumber dlg;
+	if (dlg.DoModal() == IDOK) {
+		int wm = (int)dlg.m_InputNumber;
+		pDoc->OnWatermarkBitplanewatermark(wm);
+		Invalidate(TRUE);
+	}
 }

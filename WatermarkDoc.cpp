@@ -139,7 +139,7 @@ void CWatermarkDoc::Dump(CDumpContext& dc) const
 // CWatermarkDoc 명령
 
 
-void CWatermarkDoc::OnWatermarkBitplanewatermark()
+void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 {
 	// TODO: 여기에 구현 코드 추가.
 	m_Re_height = m_height;
@@ -151,48 +151,34 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark()
 
 	m_BitPlane_ptr = new unsigned char* [8];
 
-	m_BitPlane_ptr[7] = SplitBitPlane(mask, position);
+	m_BitPlane_ptr[7] = SplitBitPlane(mask, position, wm);
 
 	for (int i = 6; i >= 0; i--)
 	{
+		unsigned char* bitPlane = new unsigned char[m_Re_size];
 		mask <<= 1;
 		position += 1;
-		m_BitPlane_ptr[i] = SplitBitPlane(mask, position);
+
+		if (wm == (i + 1))
+		{
+			OutputDebugString(L"wm");
+			for (int p = 0; p < m_Re_size; p++)
+			{
+				bitPlane[p] = 255;
+			}
+			m_BitPlane_ptr[i] = bitPlane;
+		}
+		else
+		{
+			OutputDebugString(L"else");
+			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
+		}
 	}
-	/*mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[6] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[5] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[4] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[3] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[2] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[1] = SplitBitPlane(mask, position);
-
-	mask <<= 1;
-	position += 1;
-	m_BitPlane_ptr[0] = SplitBitPlane(mask, position);*/
-	
-
 }
 
 
 // 비트플레인 분리
-unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position)
+unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position, int wm)
 {
 	// TODO: 여기에 구현 코드 추가.
 	unsigned char* bitPlane = new unsigned char[m_Re_size];
@@ -207,6 +193,7 @@ unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position)
 			bitPlane[i] = 0;
 		}
 	}
+
 	return bitPlane;
 }
 
