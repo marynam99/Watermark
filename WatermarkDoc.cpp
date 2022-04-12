@@ -154,15 +154,12 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 	CFileDialog OpenDlg(TRUE);
 
 	m_BitPlane_ptr = new unsigned char* [8];
-	m_BitPlane_ptr[7] = SplitBitPlane(mask, position, wm);
+	//m_BitPlane_ptr[7] = SplitBitPlane(mask, position, wm);
 
-	for (int i = 6; i >= 0; i--)
+	for (int i = 7; i >= 0; i--)
 	{
 		unsigned char* bitPlane = new unsigned char[m_Re_size];
-		mask <<= 1;
-		position += 1;
 		
-		//TODO: 0이 대체 안됨
 		if (wm == 7-i) // 입력한 비트플레인을 워터마크 이미지로 대체
 		{
 			// 워터마크 이미지 로드
@@ -183,6 +180,8 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 			OutputDebugString("else");
 			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
 		}
+		mask <<= 1;
+		position += 1;
 	}
 }
 
