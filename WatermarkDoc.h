@@ -27,14 +27,8 @@ public:
 
     // 비트 플레인 이미지들
     unsigned char** m_BitPlane_ptr;
-    unsigned char* m_BitPlane0;
-    unsigned char* m_BitPlane1;
-    unsigned char* m_BitPlane2;
-    unsigned char* m_BitPlane3;
-    unsigned char* m_BitPlane4;
-    unsigned char* m_BitPlane5;
-    unsigned char* m_BitPlane6;
-    unsigned char* m_BitPlane7;
+
+    const LPCTSTR m_watermark_file_name = "C:/Users/SM-PC/Downloads/watermark.raw";
 
 // 작업입니다.
 public:

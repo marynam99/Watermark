@@ -25,4 +25,5 @@ public:
 	// 비트맵 정수 입력
 	//CEdit m_InputNumber;
 	double m_InputNumber;
+	afx_msg void OnBnClickedOk();
 };

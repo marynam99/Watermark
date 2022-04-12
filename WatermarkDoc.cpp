@@ -149,8 +149,11 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 	unsigned char mask = 0x01;
 	int position = 0;
 
-	m_BitPlane_ptr = new unsigned char* [8];
+	unsigned char* m_DTEMP = NULL;
+	CFile File;
+	CFileDialog OpenDlg(TRUE);
 
+	m_BitPlane_ptr = new unsigned char* [8];
 	m_BitPlane_ptr[7] = SplitBitPlane(mask, position, wm);
 
 	for (int i = 6; i >= 0; i--)
@@ -158,19 +161,26 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 		unsigned char* bitPlane = new unsigned char[m_Re_size];
 		mask <<= 1;
 		position += 1;
-
-		if (wm == (i + 1))
+		
+		//TODO: 0이 대체 안됨
+		if (wm == 7-i) // 입력한 비트플레인을 워터마크 이미지로 대체
 		{
-			OutputDebugString(L"wm");
+			// 워터마크 이미지 로드
+			File.Open(m_watermark_file_name, CFile::modeRead);
+			m_DTEMP = new unsigned char[m_size];
+			File.Read(m_DTEMP, m_size);
+			File.Close();
+			OutputDebugString("wm");
 			for (int p = 0; p < m_Re_size; p++)
 			{
-				bitPlane[p] = 255;
+				// TODO
+				bitPlane[p] = m_DTEMP[p];
 			}
 			m_BitPlane_ptr[i] = bitPlane;
 		}
 		else
 		{
-			OutputDebugString(L"else");
+			OutputDebugString("else");
 			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
 		}
 	}
@@ -210,15 +220,15 @@ BOOL CWatermarkDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
 	if (File.GetLength() == 256 * 256) // 이미지 크기 = 256 * 256
 	{
-		this->m_height = 256; // m_height = 256; 와 똑같다
+		this->m_height = 256;
 		this->m_width = 256;
 	}
-	else
+	else // 정의되지 않은 이미지 크기는 에러 처리
 	{
-		AfxMessageBox(L"256 * 256 사이즈 이미지를 사용해주세요.",
+		AfxMessageBox("256 * 256 사이즈 이미지를 사용해주세요.",
 			MB_OK | MB_ICONEXCLAMATION);
 		return 0;
-	} // 정의되지 않은 이미지 크기는 에러 처리
+	} 
 
 	m_size = m_width * m_height;
 	m_InputImage = new unsigned char[m_size]; //메모리 할당

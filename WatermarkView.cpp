@@ -64,7 +64,20 @@ void CWatermarkView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
-	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+	// 이미지를 빠르게 출력
+	CRect viewRect;
+	GetClientRect(viewRect);
+
+	int height = viewRect.Height();
+	int width = viewRect.Width();
+	CDC memDC;
+	CBitmap bit;
+	memDC.CreateCompatibleDC(pDC);
+	bit.CreateCompatibleBitmap(pDC, width, height);
+	memDC.SelectObject(&bit);
+	memDC.Rectangle(0, 0, width, height);
+
+
 	// 입력 이미지를 화면에 출력
 	int i, j;
 	unsigned char R, G, B;
@@ -78,7 +91,7 @@ void CWatermarkView::OnDraw(CDC* pDC)
 		for (int j = 0; j < pDoc->m_width; j++)
 		{
 			R = G = B = pDoc->m_InputImage[i * (pDoc->m_width) + j]; //Input: Grayscale. 따라서 rgb를 똑같이 함
-			pDC->SetPixel(j + 5, i + 5, RGB(R, G, B)); // 첫 두 매개변수: 좌표
+			memDC.SetPixel(j + 5, i + 5, RGB(R, G, B)); // 첫 두 매개변수: 좌표
 		}
 	}
 
@@ -94,7 +107,7 @@ void CWatermarkView::OnDraw(CDC* pDC)
 				for (int j = 0; j < pDoc->m_Re_width; j++)
 				{
 					R = G = B = pDoc->m_BitPlane_ptr[bp_num][i * (pDoc->m_Re_width) + j];
-					pDC->SetPixel(
+					memDC.SetPixel(
 						j + pDoc->m_width * (bp_num % 4 + 1) + 10,
 						i + pDoc->m_Re_height * (bp_num / 4) + 5,
 						RGB(R, G, B));
@@ -102,6 +115,12 @@ void CWatermarkView::OnDraw(CDC* pDC)
 			}
 		}
 	}
+	// 결과 출력
+	pDC->BitBlt(0, 0, width, height, &memDC, 0, 0, SRCCOPY);
+
+	// 메모리 해제
+	memDC.DeleteDC();
+	bit.DeleteObject();
 }
 
 // CWatermarkView 인쇄
@@ -179,6 +198,15 @@ void CWatermarkView::OnWatermarkBitplanewatermark()
 	CDlgNumber dlg;
 	if (dlg.DoModal() == IDOK) {
 		int wm = (int)dlg.m_InputNumber;
+
+		// 잘못된 입력값에 대한 메시지 처리
+		while ((wm > 7) | (wm < 0)) {
+			AfxMessageBox("0~7 범위의 정수를 입력해주세요",
+				MB_OK | MB_RETRYCANCEL );
+			if (dlg.DoModal() == IDOK) {
+				wm = (int)dlg.m_InputNumber;
+			}
+		}
 		pDoc->OnWatermarkBitplanewatermark(wm);
 		Invalidate(TRUE);
 	}
