@@ -158,8 +158,9 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 		unsigned char* bitPlane = new unsigned char[m_Re_size];
 		mask <<= 1;
 		position += 1;
-
-		if (wm == (i + 1))
+		
+		//TODO: 0이 대체 안됨
+		if (wm == 7-i) // 워터마크 이미지로 대체
 		{
 			OutputDebugString(L"wm");
 			for (int p = 0; p < m_Re_size; p++)
