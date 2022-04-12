@@ -30,7 +30,15 @@ void CDlgNumber::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgNumber, CDialogEx)
+	ON_BN_CLICKED(IDOK, &CDlgNumber::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
 // CDlgNumber 메시지 처리기
+
+
+void CDlgNumber::OnBnClickedOk()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CDialogEx::OnOK();
+}

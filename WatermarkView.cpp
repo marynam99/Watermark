@@ -198,6 +198,15 @@ void CWatermarkView::OnWatermarkBitplanewatermark()
 	CDlgNumber dlg;
 	if (dlg.DoModal() == IDOK) {
 		int wm = (int)dlg.m_InputNumber;
+
+		// 잘못된 입력값에 대한 메시지 처리
+		while ((wm > 7) | (wm < 0)) {
+			AfxMessageBox("0~7 범위의 정수를 입력해주세요",
+				MB_OK | MB_RETRYCANCEL );
+			if (dlg.DoModal() == IDOK) {
+				wm = (int)dlg.m_InputNumber;
+			}
+		}
 		pDoc->OnWatermarkBitplanewatermark(wm);
 		Invalidate(TRUE);
 	}
