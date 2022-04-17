@@ -25,10 +25,8 @@ public:
     unsigned char* m_InputImage;
     unsigned char* m_OutputImage;
 
-    // 비트 플레인 이미지들
+    // 비트 플레인 배열
     unsigned char** m_BitPlane_ptr;
-
-    const LPCTSTR m_watermark_file_name = "C:/Users/SM-PC/Downloads/watermark.raw";
 
 // 작업입니다.
 public:

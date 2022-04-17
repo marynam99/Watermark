@@ -55,8 +55,6 @@ BOOL CWatermarkView::PreCreateWindow(CREATESTRUCT& cs)
 	return CView::PreCreateWindow(cs);
 }
 
-// CWatermarkView 그리기
-
 void CWatermarkView::OnDraw(CDC* pDC)
 {
 	CWatermarkDoc* pDoc = GetDocument();
@@ -83,23 +81,20 @@ void CWatermarkView::OnDraw(CDC* pDC)
 	unsigned char R, G, B;
 	unsigned char* m_temp_bitplane;
 
-	
-
 	// 원본 이미지 출력
 	for (int i = 0; i < pDoc->m_height; i++)
 	{
 		for (int j = 0; j < pDoc->m_width; j++)
 		{
 			R = G = B = pDoc->m_InputImage[i * (pDoc->m_width) + j]; //Input: Grayscale. 따라서 rgb를 똑같이 함
-			memDC.SetPixel(j + 5, i + 5, RGB(R, G, B)); // 첫 두 매개변수: 좌표
+			memDC.SetPixel(j + 5, i + 5, RGB(R, G, B));
 		}
 	}
 
-	// 몇번째 비트플레인에 Watermark 삽입할 지 입력
-	CDlgNumber dlg;
 	// 비트플레인 이미지를 화면에 출력
 	if (is_bitplaneall)
 	{
+		// bp_num: 8개의 비트플레인
 		for (int bp_num = 0; bp_num < 8; bp_num++)
 		{
 			for (int i = 0; i < pDoc->m_Re_height; i++)
@@ -108,7 +103,7 @@ void CWatermarkView::OnDraw(CDC* pDC)
 				{
 					R = G = B = pDoc->m_BitPlane_ptr[bp_num][i * (pDoc->m_Re_width) + j];
 					memDC.SetPixel(
-						j + pDoc->m_width * (bp_num % 4 + 1) + 10,
+						j + pDoc->m_width * (bp_num % 4 + 1) + 10, //한 줄에 이미지 네개씩 출력
 						i + pDoc->m_Re_height * (bp_num / 4) + 5,
 						RGB(R, G, B));
 				}
@@ -194,13 +189,13 @@ void CWatermarkView::OnWatermarkBitplanewatermark()
 	CWatermarkDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-	// 몇번째 비트맵에 wm 넣을 지 입력
+	// wm: 몇번째 비트맵에 워터마크 이미지 넣을 지 입력
 	CDlgNumber dlg;
 	if (dlg.DoModal() == IDOK) {
 		int wm = (int)dlg.m_InputNumber;
 
-		// 잘못된 입력값에 대한 메시지 처리
-		while ((wm > 7) | (wm < 0)) {
+		// 잘못된 입력값에 대한 메시지 처리(올바른 입력 들어올 때까지 반복)
+		while ((wm > 7) || (wm < 0)) {
 			AfxMessageBox("0~7 범위의 정수를 입력해주세요",
 				MB_OK | MB_RETRYCANCEL );
 			if (dlg.DoModal() == IDOK) {
