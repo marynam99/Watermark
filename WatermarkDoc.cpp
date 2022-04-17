@@ -171,8 +171,6 @@ BOOL CWatermarkDoc::OnOpenDocument(LPCTSTR lpszPathName)
 }
 
 
-// CWatermarkDoc 명령
-
 void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 {
 	m_Re_height = m_height;
@@ -181,26 +179,27 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 
 	unsigned char mask = 0x01;
 	int position = 0;
-
-	m_BitPlane_ptr = new unsigned char* [8];
+ 
+	m_BitPlane_ptr = new unsigned char* [8]; // array for 8 bitmaps
 
 	for (int i = 7; i >= 0; i--)
 	{
-		// bitPlane: 워터마크로 대체될 이미지
-		unsigned char* bitPlane = new unsigned char[m_Re_size];
+		unsigned char* bitPlane = new unsigned char[m_Re_size]; // image we will rewrite as watermark
 		
-		if (wm == 7 - i) // 입력한 비트플레인을 워터마크 이미지로 대체
+		// (if) handling watermark instead of bitmap
+		if (wm == 7 - i) 
 		{
-			// 대상 이미지 업로드
+			// upload watermark image
 			unsigned char* m_DTEMP = NULL;
 			CFile File;
 			CFileDialog OpenDlg(TRUE);
 
-			// 워터마크 이미지 로드
+			// load new image 
 			if (OpenDlg.DoModal() == IDOK)
 			{
 				File.Open(OpenDlg.GetPathName(), CFile::modeRead);
 
+				// if watermark size unmatch -> open new CFile object
 				while (File.GetLength() != (unsigned)m_size) {
 					File.Close();
 					AfxMessageBox("Image does not match size 256*256",
@@ -209,17 +208,20 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 						File.Open(OpenDlg.GetPathName(), CFile::modeRead);
 					}
 				}
+
 				m_DTEMP = new unsigned char[m_size];
 				File.Read(m_DTEMP, m_size);
 				File.Close();
 			}
+			// write watermark image on bitPlane
 			for (int p = 0; p < m_Re_size; p++)
 			{
 				bitPlane[p] = m_DTEMP[p];
 			}
 			m_BitPlane_ptr[i] = bitPlane;
 		}
-		else // 워터마크 제외하고는 비트플레인 출력
+		// handling all remaining bitmaps
+		else 
 		{
 			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
 		}
@@ -232,7 +234,6 @@ void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
 // 비트플레인 분리
 unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position, int wm)
 {
-	// TODO: 여기에 구현 코드 추가.
 	unsigned char* bitPlane = new unsigned char[m_Re_size];
 
 	for (int i = 0; i < m_Re_size; i++)
