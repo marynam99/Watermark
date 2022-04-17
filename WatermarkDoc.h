@@ -25,10 +25,7 @@ public:
     unsigned char* m_InputImage;
     unsigned char* m_OutputImage;
 
-    // 비트 플레인 이미지들
-    unsigned char** m_BitPlane_ptr;
-
-    const LPCTSTR m_watermark_file_name = "C:/Users/SM-PC/Downloads/watermark.raw";
+    unsigned char** m_BitPlane_ptr;// array for 8 bitmaps
 
 // 작업입니다.
 public:
@@ -62,7 +59,6 @@ protected:
 #endif // SHARED_HANDLERS
 public:
     void OnWatermarkBitplanewatermark(int wm);
-    // 비트플레인 분리
     unsigned char* SplitBitPlane(unsigned char mask, int position, int wm);
     virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 };

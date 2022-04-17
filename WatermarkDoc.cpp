@@ -136,77 +136,6 @@ void CWatermarkDoc::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CWatermarkDoc 명령
-
-
-void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
-{
-	// TODO: 여기에 구현 코드 추가.
-	m_Re_height = m_height;
-	m_Re_width = m_width;
-	m_Re_size = m_Re_height * m_Re_width;
-
-	unsigned char mask = 0x01;
-	int position = 0;
-
-	unsigned char* m_DTEMP = NULL;
-	CFile File;
-	CFileDialog OpenDlg(TRUE);
-
-	m_BitPlane_ptr = new unsigned char* [8];
-	//m_BitPlane_ptr[7] = SplitBitPlane(mask, position, wm);
-
-	for (int i = 7; i >= 0; i--)
-	{
-		unsigned char* bitPlane = new unsigned char[m_Re_size];
-		
-		if (wm == 7-i) // 입력한 비트플레인을 워터마크 이미지로 대체
-		{
-			// 워터마크 이미지 로드
-			File.Open(m_watermark_file_name, CFile::modeRead);
-			m_DTEMP = new unsigned char[m_size];
-			File.Read(m_DTEMP, m_size);
-			File.Close();
-			OutputDebugString("wm");
-			for (int p = 0; p < m_Re_size; p++)
-			{
-				// TODO
-				bitPlane[p] = m_DTEMP[p];
-			}
-			m_BitPlane_ptr[i] = bitPlane;
-		}
-		else
-		{
-			OutputDebugString("else");
-			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
-		}
-		mask <<= 1;
-		position += 1;
-	}
-}
-
-
-// 비트플레인 분리
-unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position, int wm)
-{
-	// TODO: 여기에 구현 코드 추가.
-	unsigned char* bitPlane = new unsigned char[m_Re_size];
-
-	for (int i = 0; i < m_Re_size; i++)
-	{
-		unsigned char pel = m_InputImage[i];
-		if ((pel & mask) == pow(2, position)) {
-			bitPlane[i] = 255;
-		}
-		else {
-			bitPlane[i] = 0;
-		}
-	}
-
-	return bitPlane;
-}
-
-
 BOOL CWatermarkDoc::OnOpenDocument(LPCTSTR lpszPathName)
 {
 	if (!CDocument::OnOpenDocument(lpszPathName))
@@ -224,10 +153,10 @@ BOOL CWatermarkDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	}
 	else // 정의되지 않은 이미지 크기는 에러 처리
 	{
-		AfxMessageBox("256 * 256 사이즈 이미지를 사용해주세요.",
+		AfxMessageBox("Image does not match size 256*256",
 			MB_OK | MB_ICONEXCLAMATION);
 		return 0;
-	} 
+	}
 
 	m_size = m_width * m_height;
 	m_InputImage = new unsigned char[m_size]; //메모리 할당
@@ -239,4 +168,84 @@ BOOL CWatermarkDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	File.Close(); //파일 닫기
 
 	return TRUE;
+}
+
+
+void CWatermarkDoc::OnWatermarkBitplanewatermark(int wm)
+{
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	unsigned char mask = 0x01;
+	int position = 0;
+ 
+	m_BitPlane_ptr = new unsigned char* [8]; // array for 8 bitmaps
+
+	for (int i = 7; i >= 0; i--)
+	{
+		unsigned char* bitPlane = new unsigned char[m_Re_size]; // image we will rewrite as watermark
+		
+		// (if) handling watermark instead of bitmap
+		if (wm == 7 - i) 
+		{
+			// upload watermark image
+			unsigned char* m_DTEMP = NULL;
+			CFile File;
+			CFileDialog OpenDlg(TRUE);
+
+			// load new image 
+			if (OpenDlg.DoModal() == IDOK)
+			{
+				File.Open(OpenDlg.GetPathName(), CFile::modeRead);
+
+				// if watermark size unmatch -> open new CFile object
+				while (File.GetLength() != (unsigned)m_size) {
+					File.Close();
+					AfxMessageBox("Image does not match size 256*256",
+						MB_OK | MB_RETRYCANCEL);
+					if (OpenDlg.DoModal() == IDOK) {
+						File.Open(OpenDlg.GetPathName(), CFile::modeRead);
+					}
+				}
+
+				m_DTEMP = new unsigned char[m_size];
+				File.Read(m_DTEMP, m_size);
+				File.Close();
+			}
+			// write watermark image on bitPlane
+			for (int p = 0; p < m_Re_size; p++)
+			{
+				bitPlane[p] = m_DTEMP[p];
+			}
+			m_BitPlane_ptr[i] = bitPlane;
+		}
+		// handling all remaining bitmaps
+		else 
+		{
+			m_BitPlane_ptr[i] = SplitBitPlane(mask, position, wm);
+		}
+		mask <<= 1;
+		position += 1;
+	}
+}
+
+
+// 비트플레인 분리
+unsigned char* CWatermarkDoc::SplitBitPlane(unsigned char mask, int position, int wm)
+{
+	unsigned char* bitPlane = new unsigned char[m_Re_size];
+
+	for (int i = 0; i < m_Re_size; i++)
+	{
+		unsigned char pel = m_InputImage[i];
+		if ((pel & mask) == pow(2, position)) {
+			bitPlane[i] = 255;
+		}
+		else {
+			bitPlane[i] = 0;
+		}
+	}
+
+	return bitPlane;
 }
